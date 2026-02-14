@@ -24,7 +24,7 @@ body{
     padding:15px;
 }
 
-/* floating hearts background */
+/* Floating Hearts Background */
 .heart{
     position:absolute;
     color:rgba(255,77,109,.15);
@@ -37,7 +37,7 @@ body{
     50%{transform:translateY(-20px);}
 }
 
-/* container */
+/* Main Container */
 .container{
     background:#fff;
     width:100%;
@@ -56,68 +56,12 @@ h1{
     font-size:clamp(1.6rem,5vw,2rem);
 }
 
-.intro-text{
-    color:#666;
-    margin-bottom:18px;
-}
-
-.question-text{
-    color:#ff4d6d;
-    font-size:1.1rem;
-    margin-bottom:25px;
-    font-weight:600;
-    padding:12px;
-    background:rgba(255,77,109,.06);
-    border-radius:12px;
-}
-
-/* buttons */
-.buttons{
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-}
-
-button{
-    flex:1;
-    padding:12px;
-    border:none;
-    border-radius:30px;
-    font-size:1rem;
-    font-weight:600;
-    cursor:pointer;
-    transition:.25s ease;
-}
-
-#yesBtn{
-    background:linear-gradient(135deg,#ff4d6d,#ff8fa3);
-    color:#fff;
-}
-
-#yesBtn:hover{
-    transform:scale(1.05);
-}
-
-#noBtn{
-    background:linear-gradient(135deg,#e0e0e0,#f0f0f0);
-    color:#555;
-}
-
-/* result */
-#result{
-    display:none;
-    animation:fadeIn .6s ease forwards;
-}
-
-@keyframes fadeIn{
-    from{opacity:0;transform:translateY(15px);}
-    to{opacity:1;transform:translateY(0);}
-}
-
+/* Slideshow */
 .slideshow{
+    position:relative;
     width:100%;
     max-width:280px;
-    aspect-ratio: 3 / 4;  /* Keeps consistent ratio */
+    aspect-ratio:3/4;
     margin:20px auto;
     overflow:hidden;
     border-radius:16px;
@@ -131,8 +75,28 @@ button{
     transition:opacity .6s ease;
 }
 
+.play-overlay{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:none;          /* remove background */
+    width:auto;               /* remove fixed size */
+    height:auto;
+    color:#ffffff;
+    font-size:60px;           /* bigger icon */
+    cursor:pointer;
+    transition:.3s ease;
+    text-shadow:0 4px 15px rgba(0,0,0,0.6); /* glow for visibility */
+}
 
-/* message */
+/* Hover effect */
+.play-overlay:hover{
+    transform:translate(-50%,-50%) scale(1.2);
+    color:#ff4d6d;
+}
+
+/* Message Box */
 .message{
     background:rgba(255,77,109,.06);
     border-radius:14px;
@@ -148,37 +112,6 @@ button{
     color:#ff4d6d;
     font-weight:600;
 }
-
-/* modal */
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
-}
-
-.modal-content{
-    background:#fff;
-    padding:25px;
-    border-radius:18px;
-    text-align:center;
-    width:90%;
-    max-width:350px;
-    animation:pop .3s ease;
-}
-
-@keyframes pop{
-    from{opacity:0;transform:scale(.9);}
-    to{opacity:1;transform:scale(1);}
-}
-
-.modal-content h3{
-    color:#ff4d6d;
-    margin-bottom:20px;
-}
 </style>
 </head>
 <body>
@@ -186,52 +119,28 @@ button{
 <div id="hearts-container"></div>
 
 <div class="container">
+    <h1>You made my day! 💞</h1>
 
-    <div id="question">
-        <h1>Happy Valentine's Day 💖</h1>
-        <p class="intro-text">On this special day, I have something important to ask you…</p>
-        <p class="question-text">Would you be my Valentine this February 14?</p>
-
-        <div class="buttons">
-            <button id="yesBtn">Yes</button>
-            <button id="noBtn">No</button>
-        </div>
+    <div class="slideshow">
+        <img id="slideImage" src="images/1.jpeg" alt="Memories">
+        <div class="play-overlay" id="playButton">▶</div>
     </div>
 
-    <div id="result">
-        <h1>You made my day! 💞</h1>
-
-        <div class="slideshow">
-            <img id="slideImage" src="images/1.jpeg" alt="Memories">
-        </div>
-
-        <div class="message">
-<p>As long as I’m here, I’ll protect and cherish what we have. 💞</p>
-<p>Stay strong with me, and I promise I’ll never stop loving you.</p>
-
-        </div>
-
-        <p class="signature">With all my heart 💖</p>
+    <div class="message">
+        <p>As long as I’m here, I’ll protect and cherish what we have. 💞</p>
+        <p>Stay strong with me, and I promise I’ll never stop loving you.</p>
     </div>
 
+    <p class="signature">With all my heart 💖</p>
 </div>
 
-<!-- Modal -->
-<div class="modal" id="sureModal">
-    <div class="modal-content">
-        <h3 id="randomQuestion"></h3>
-        <button id="modalYes">Okay fine… Yes 💖</button>
-        <button id="modalNo">Still No 😅</button>
-    </div>
-</div>
-
-<!-- 🎵 BACKGROUND MUSIC INSERTED -->
 <audio id="bgMusic" src="music/palagi.mp3" loop></audio>
 
 <script>
 
-/* floating hearts */
-const heartsContainer=document.getElementById("hearts-container");
+/* Floating Hearts */
+const heartsContainer = document.getElementById("hearts-container");
+
 for(let i=0;i<18;i++){
     const h=document.createElement("div");
     h.className="heart";
@@ -242,18 +151,10 @@ for(let i=0;i<18;i++){
     heartsContainer.appendChild(h);
 }
 
-const yesBtn=document.getElementById("yesBtn");
-const noBtn=document.getElementById("noBtn");
-const question=document.getElementById("question");
-const result=document.getElementById("result");
-const bgMusic=document.getElementById("bgMusic"); // 🎵 added
-
-const modal=document.getElementById("sureModal");
-const randomQuestion=document.getElementById("randomQuestion");
-const modalYes=document.getElementById("modalYes");
-const modalNo=document.getElementById("modalNo");
-
+/* Elements */
+const bgMusic=document.getElementById("bgMusic");
 const slideImage=document.getElementById("slideImage");
+const playButton=document.getElementById("playButton");
 
 const images=[
 "images/1.jpeg",
@@ -268,33 +169,16 @@ const images=[
 "images/10.jpeg",
 "images/11.jpeg",
 "images/12.jpeg",
-"images/13.jpeg",
+"images/13.jpeg"
 ];
 
 let currentIndex=0;
-let slideshowStarted=false;
+let slideshowInterval;
 
-/* YES */
-yesBtn.addEventListener("click",()=>{
-    question.style.display="none";
-    result.style.display="block";
-    startSlideshow();
-    heartBurst();
-
-    bgMusic.volume=0.7;  // 🎵 inserted
-    bgMusic.play();      // 🎵 inserted
-});
-
-/* slideshow */
+/* Start Slideshow */
 function startSlideshow(){
-    if(slideshowStarted) return;
-    slideshowStarted=true;
-
-    setInterval(()=>{
-        currentIndex++;
-        if(currentIndex>=images.length){
-            currentIndex=0;
-        }
+    slideshowInterval=setInterval(()=>{
+        currentIndex=(currentIndex+1)%images.length;
 
         slideImage.style.opacity=0;
 
@@ -306,7 +190,7 @@ function startSlideshow(){
     },2500);
 }
 
-/* heart burst */
+/* Heart Burst Effect */
 function heartBurst(){
     for(let i=0;i<12;i++){
         setTimeout(()=>{
@@ -333,35 +217,21 @@ function heartBurst(){
     }
 }
 
-/* NO modal */
-const questions=[
-"Are you sure? 🥺",
-"Sure na jud ka? 😢",
-"Ngano mo balibad man ka? 😅",
-"Think again… 💔",
-"Last chance… 😭",
-"100% sure ka? 🥹"
-];
+/* Play Button Click */
+playButton.addEventListener("click",()=>{
 
-noBtn.addEventListener("click",showRandomQuestion);
-modalNo.addEventListener("click",showRandomQuestion);
-
-modalYes.addEventListener("click",()=>{
-    modal.style.display="none";
-    question.style.display="none";
-    result.style.display="block";
     startSlideshow();
     heartBurst();
 
-    bgMusic.volume=0.7;  // 🎵 inserted
-    bgMusic.play();      // 🎵 inserted
-});
+    bgMusic.volume=0.7;
+    bgMusic.play();
 
-function showRandomQuestion(){
-    const randomIndex=Math.floor(Math.random()*questions.length);
-    randomQuestion.textContent=questions[randomIndex];
-    modal.style.display="flex";
-}
+    playButton.style.opacity="0";
+    setTimeout(()=>{
+        playButton.style.display="none";
+    },300);
+
+});
 
 </script>
 
