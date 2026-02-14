@@ -168,6 +168,25 @@ button{
 .modal-content button{
     margin:6px;
 }
+.message{
+    background:rgba(255,77,109,.06);
+    border-radius:14px;
+    padding:16px;
+    color:#555;
+    line-height:1.6;
+    text-align:left;
+    position:relative;
+}
+
+.message:before{
+    content:"💌";
+    position:absolute;
+    top:-12px;
+    left:15px;
+    background:#fff;
+    padding:3px 8px;
+    border-radius:50%;
+}
 </style>
 </head>
 <body>
@@ -192,8 +211,11 @@ button{
 
         <img src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=600&auto=format&fit=crop" alt="Romantic">
 
+        <div class="message">
             <p>I know you would accept my offer, because you liked me the day you saw me at our first meet. 💗</p>
             <p>I can’t wait to make this Valentine’s Day special for us.</p>
+        </div>
+
         <p class="signature">With all my heart 💖</p>
     </div>
 
