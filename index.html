@@ -69,11 +69,8 @@ h1{
     border-radius:10px;
 }
 
-/* buttons area */
 .buttons{
-    position:relative;
     width:100%;
-    height:70px;
 }
 
 button{
@@ -84,26 +81,21 @@ button{
     font-weight:600;
     cursor:pointer;
     transition:.25s ease;
-    position:absolute;
-    top:0;
+    margin:5px;
 }
 
 #yesBtn{
     background:linear-gradient(135deg,#ff4d6d,#ff8fa3);
     color:#fff;
-    left:25%;
-    transform:translateX(-50%);
 }
 
 #yesBtn:hover{
-    transform:translateX(-50%) scale(1.05);
+    transform:scale(1.05);
 }
 
 #noBtn{
     background:linear-gradient(135deg,#e0e0e0,#f0f0f0);
     color:#555;
-    left:75%;
-    transform:translateX(-50%);
 }
 
 /* result */
@@ -125,26 +117,6 @@ button{
     box-shadow:0 10px 20px rgba(0,0,0,.15);
 }
 
-.message{
-    background:rgba(255,77,109,.06);
-    border-radius:14px;
-    padding:16px;
-    color:#555;
-    line-height:1.6;
-    text-align:left;
-    position:relative;
-}
-
-.message:before{
-    content:"💌";
-    position:absolute;
-    top:-12px;
-    left:15px;
-    background:#fff;
-    padding:3px 8px;
-    border-radius:50%;
-}
-
 .signature{
     margin-top:18px;
     color:#ff4d6d;
@@ -162,11 +134,39 @@ button{
     100%{transform:scale(1);}
 }
 
-/* small screens */
-@media(max-width:480px){
-    h1{font-size:1.7rem;}
-    .question-text{font-size:1.05rem;}
-    button{padding:10px 24px;}
+/* modal */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.modal-content{
+    background:#fff;
+    padding:30px;
+    border-radius:18px;
+    text-align:center;
+    width:90%;
+    max-width:350px;
+    animation:pop .3s ease;
+}
+
+@keyframes pop{
+    from{opacity:0;transform:scale(.9);}
+    to{opacity:1;transform:scale(1);}
+}
+
+.modal-content h3{
+    color:#ff4d6d;
+    margin-bottom:20px;
+}
+
+.modal-content button{
+    margin:6px;
 }
 </style>
 </head>
@@ -174,7 +174,7 @@ button{
 
 <div id="hearts-container"></div>
 
-<div class="container" id="mainBox">
+<div class="container">
 
     <div id="question">
         <h1>Happy Valentine's Day <span class="heart-pulse">💖</span></h1>
@@ -192,22 +192,28 @@ button{
 
         <img src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=600&auto=format&fit=crop" alt="Romantic">
 
-        <div class="message">
             <p>I know you would accept my offer, because you liked me the day you saw me at our first meet. 💗</p>
             <p>I can’t wait to make this Valentine’s Day special for us.</p>
-        </div>
-
         <p class="signature">With all my heart 💖</p>
     </div>
 
 </div>
 
-<script>
-/* floating hearts background */
-const heartsContainer = document.getElementById("hearts-container");
+<!-- Modal -->
+<div class="modal" id="sureModal">
+    <div class="modal-content">
+        <h3 id="randomQuestion"></h3>
+        <button id="modalYes">Okay fine… Yes 💖</button>
+        <button id="modalNo">Still No 😅</button>
+    </div>
+</div>
 
+<script>
+
+/* floating hearts */
+const heartsContainer = document.getElementById("hearts-container");
 for(let i=0;i<18;i++){
-    const h = document.createElement("div");
+    const h=document.createElement("div");
     h.className="heart";
     h.innerHTML="❤";
     h.style.left=Math.random()*100+"vw";
@@ -217,52 +223,41 @@ for(let i=0;i<18;i++){
     heartsContainer.appendChild(h);
 }
 
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
-const question = document.getElementById("question");
-const result = document.getElementById("result");
-const box = document.getElementById("mainBox");
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const question=document.getElementById("question");
+const result=document.getElementById("result");
 
-/* remove transform conflict before moving */
-noBtn.style.transform = "translateX(-50%)";
+const modal=document.getElementById("sureModal");
+const randomQuestion=document.getElementById("randomQuestion");
+const modalYes=document.getElementById("modalYes");
+const modalNo=document.getElementById("modalNo");
 
-/* escape button */
-noBtn.addEventListener("mouseenter", moveNo);
-noBtn.addEventListener("touchstart", moveNo);
+/* random questions */
+const questions=[
+    "Are you sure you won't accept? 🥺",
+    "Sure na jud ka? 😢",
+    "Ngano mo balibad man ka? Pwede pa man diay na? 😅",
+    "Think again… sure ka? 💔",
+    "Last chance… sure na ba? 😭",
+    "Basin nag joke ra ka? 😏",
+    "100% sure ka? 🥹"
+];
 
-function moveNo(){
-
-    const boxRect = box.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-
-    const padding = 10;
-
-    const maxX = boxRect.width - btnRect.width - padding;
-    const maxY = boxRect.height - btnRect.height - padding;
-
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top  = y + "px";
-}
-
-/* yes click */
-yesBtn.addEventListener("click", () => {
-
+/* YES */
+yesBtn.addEventListener("click",()=>{
     question.style.display="none";
     result.style.display="block";
 
     for(let i=0;i<12;i++){
         setTimeout(()=>{
             const h=document.createElement("div");
-            h.className="heart";
             h.innerHTML="❤";
             h.style.position="fixed";
             h.style.left="50%";
             h.style.top="50%";
-            h.style.color="#ff4d6d";
             h.style.fontSize="26px";
+            h.style.color="#ff4d6d";
             h.style.zIndex=9999;
 
             const x=(Math.random()*200-100);
@@ -275,11 +270,27 @@ yesBtn.addEventListener("click", () => {
 
             document.body.appendChild(h);
             setTimeout(()=>h.remove(),1000);
-
         },i*70);
     }
-
 });
+
+/* NO */
+noBtn.addEventListener("click",showRandomQuestion);
+
+modalYes.addEventListener("click",()=>{
+    modal.style.display="none";
+    question.style.display="none";
+    result.style.display="block";
+});
+
+modalNo.addEventListener("click",showRandomQuestion);
+
+function showRandomQuestion(){
+    const randomIndex=Math.floor(Math.random()*questions.length);
+    randomQuestion.textContent=questions[randomIndex];
+    modal.style.display="flex";
+}
+
 </script>
 
 </body>
