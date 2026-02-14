@@ -21,9 +21,10 @@ body{
     font-family:'Segoe UI',sans-serif;
     overflow:hidden;
     position:relative;
+    padding:15px;
 }
 
-/* floating hearts */
+/* floating hearts background */
 .heart{
     position:absolute;
     color:rgba(255,77,109,.15);
@@ -36,22 +37,23 @@ body{
     50%{transform:translateY(-20px);}
 }
 
+/* container */
 .container{
-    background:rgba(255,255,255,.95);
-    width:90%;
+    background:#fff;
+    width:100%;
     max-width:420px;
-    padding:40px 28px;
+    padding:35px 25px;
     border-radius:22px;
     text-align:center;
     position:relative;
     z-index:1;
-    box-shadow:0 20px 50px rgba(0,0,0,.15);
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
 }
 
 h1{
     color:#ff4d6d;
     margin-bottom:12px;
-    font-size:2rem;
+    font-size:clamp(1.6rem,5vw,2rem);
 }
 
 .intro-text{
@@ -61,27 +63,30 @@ h1{
 
 .question-text{
     color:#ff4d6d;
-    font-size:1.2rem;
+    font-size:1.1rem;
     margin-bottom:25px;
     font-weight:600;
-    padding:10px;
+    padding:12px;
     background:rgba(255,77,109,.06);
-    border-radius:10px;
+    border-radius:12px;
 }
 
+/* buttons */
 .buttons{
-    width:100%;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
 }
 
 button{
-    padding:12px 30px;
+    flex:1;
+    padding:12px;
     border:none;
     border-radius:30px;
     font-size:1rem;
     font-weight:600;
     cursor:pointer;
     transition:.25s ease;
-    margin:5px;
 }
 
 #yesBtn{
@@ -101,7 +106,7 @@ button{
 /* result */
 #result{
     display:none;
-    animation:fadeIn .7s ease forwards;
+    animation:fadeIn .6s ease forwards;
 }
 
 @keyframes fadeIn{
@@ -109,29 +114,39 @@ button{
     to{opacity:1;transform:translateY(0);}
 }
 
-#result img{
+.slideshow{
     width:100%;
-    max-width:260px;
+    max-width:280px;
+    aspect-ratio: 3 / 4;  /* Keeps consistent ratio */
+    margin:20px auto;
+    overflow:hidden;
     border-radius:16px;
-    margin:15px 0;
     box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+
+.slideshow img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transition:opacity .6s ease;
+}
+
+
+/* message */
+.message{
+    background:rgba(255,77,109,.06);
+    border-radius:14px;
+    padding:16px;
+    color:#555;
+    line-height:1.6;
+    text-align:left;
+    font-size:0.95rem;
 }
 
 .signature{
     margin-top:18px;
     color:#ff4d6d;
     font-weight:600;
-}
-
-.heart-pulse{
-    display:inline-block;
-    animation:pulse 1.4s infinite;
-}
-
-@keyframes pulse{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.2);}
-    100%{transform:scale(1);}
 }
 
 /* modal */
@@ -147,7 +162,7 @@ button{
 
 .modal-content{
     background:#fff;
-    padding:30px;
+    padding:25px;
     border-radius:18px;
     text-align:center;
     width:90%;
@@ -164,29 +179,6 @@ button{
     color:#ff4d6d;
     margin-bottom:20px;
 }
-
-.modal-content button{
-    margin:6px;
-}
-.message{
-    background:rgba(255,77,109,.06);
-    border-radius:14px;
-    padding:16px;
-    color:#555;
-    line-height:1.6;
-    text-align:left;
-    position:relative;
-}
-
-.message:before{
-    content:"💌";
-    position:absolute;
-    top:-12px;
-    left:15px;
-    background:#fff;
-    padding:3px 8px;
-    border-radius:50%;
-}
 </style>
 </head>
 <body>
@@ -196,7 +188,7 @@ button{
 <div class="container">
 
     <div id="question">
-        <h1>Happy Valentine's Day <span class="heart-pulse">💖</span></h1>
+        <h1>Happy Valentine's Day 💖</h1>
         <p class="intro-text">On this special day, I have something important to ask you…</p>
         <p class="question-text">Would you be my Valentine this February 14?</p>
 
@@ -207,13 +199,16 @@ button{
     </div>
 
     <div id="result">
-        <h1>You made my day! <span class="heart-pulse">💞</span></h1>
+        <h1>You made my day! 💞</h1>
 
-        <img src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=600&auto=format&fit=crop" alt="Romantic">
+        <div class="slideshow">
+            <img id="slideImage" src="images/1.jpeg" alt="Memories">
+        </div>
 
         <div class="message">
-            <p>I know you would accept my offer, because you liked me the day you saw me at our first meet. 💗</p>
-            <p>I can’t wait to make this Valentine’s Day special for us.</p>
+<p>As long as I’m here, I’ll protect and cherish what we have. 💞</p>
+<p>Stay strong with me, and I promise I’ll never stop loving you.</p>
+
         </div>
 
         <p class="signature">With all my heart 💖</p>
@@ -230,10 +225,13 @@ button{
     </div>
 </div>
 
+<!-- 🎵 BACKGROUND MUSIC INSERTED -->
+<audio id="bgMusic" src="music/palagi.mp3" loop></audio>
+
 <script>
 
 /* floating hearts */
-const heartsContainer = document.getElementById("hearts-container");
+const heartsContainer=document.getElementById("hearts-container");
 for(let i=0;i<18;i++){
     const h=document.createElement("div");
     h.className="heart";
@@ -241,7 +239,6 @@ for(let i=0;i<18;i++){
     h.style.left=Math.random()*100+"vw";
     h.style.top=Math.random()*100+"vh";
     h.style.fontSize=(14+Math.random()*18)+"px";
-    h.style.animationDelay=Math.random()*4+"s";
     heartsContainer.appendChild(h);
 }
 
@@ -249,28 +246,68 @@ const yesBtn=document.getElementById("yesBtn");
 const noBtn=document.getElementById("noBtn");
 const question=document.getElementById("question");
 const result=document.getElementById("result");
+const bgMusic=document.getElementById("bgMusic"); // 🎵 added
 
 const modal=document.getElementById("sureModal");
 const randomQuestion=document.getElementById("randomQuestion");
 const modalYes=document.getElementById("modalYes");
 const modalNo=document.getElementById("modalNo");
 
-/* random questions */
-const questions=[
-    "Are you sure you won't accept? 🥺",
-    "Sure na jud ka? 😢",
-    "Ngano mo balibad man ka? Pwede pa man diay na? 😅",
-    "Think again… sure ka? 💔",
-    "Last chance… sure na ba? 😭",
-    "Basin nag joke ra ka? 😏",
-    "100% sure ka? 🥹"
+const slideImage=document.getElementById("slideImage");
+
+const images=[
+"images/1.jpeg",
+"images/2.jpeg",
+"images/3.jpeg",
+"images/4.jpeg",
+"images/5.jpeg",
+"images/6.jpeg",
+"images/7.jpeg",
+"images/8.jpeg",
+"images/9.jpeg",
+"images/10.jpeg",
+"images/11.jpeg",
+"images/12.jpeg",
+"images/13.jpeg",
 ];
+
+let currentIndex=0;
+let slideshowStarted=false;
 
 /* YES */
 yesBtn.addEventListener("click",()=>{
     question.style.display="none";
     result.style.display="block";
+    startSlideshow();
+    heartBurst();
 
+    bgMusic.volume=0.7;  // 🎵 inserted
+    bgMusic.play();      // 🎵 inserted
+});
+
+/* slideshow */
+function startSlideshow(){
+    if(slideshowStarted) return;
+    slideshowStarted=true;
+
+    setInterval(()=>{
+        currentIndex++;
+        if(currentIndex>=images.length){
+            currentIndex=0;
+        }
+
+        slideImage.style.opacity=0;
+
+        setTimeout(()=>{
+            slideImage.src=images[currentIndex];
+            slideImage.style.opacity=1;
+        },300);
+
+    },2500);
+}
+
+/* heart burst */
+function heartBurst(){
     for(let i=0;i<12;i++){
         setTimeout(()=>{
             const h=document.createElement("div");
@@ -294,18 +331,31 @@ yesBtn.addEventListener("click",()=>{
             setTimeout(()=>h.remove(),1000);
         },i*70);
     }
-});
+}
 
-/* NO */
+/* NO modal */
+const questions=[
+"Are you sure? 🥺",
+"Sure na jud ka? 😢",
+"Ngano mo balibad man ka? 😅",
+"Think again… 💔",
+"Last chance… 😭",
+"100% sure ka? 🥹"
+];
+
 noBtn.addEventListener("click",showRandomQuestion);
+modalNo.addEventListener("click",showRandomQuestion);
 
 modalYes.addEventListener("click",()=>{
     modal.style.display="none";
     question.style.display="none";
     result.style.display="block";
-});
+    startSlideshow();
+    heartBurst();
 
-modalNo.addEventListener("click",showRandomQuestion);
+    bgMusic.volume=0.7;  // 🎵 inserted
+    bgMusic.play();      // 🎵 inserted
+});
 
 function showRandomQuestion(){
     const randomIndex=Math.floor(Math.random()*questions.length);
