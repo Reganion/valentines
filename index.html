@@ -80,20 +80,50 @@ h1{
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    background:none;          /* remove background */
-    width:auto;               /* remove fixed size */
+    background:none;
+    width:auto;
     height:auto;
     color:#ffffff;
-    font-size:60px;           /* bigger icon */
+    font-size:60px;
     cursor:pointer;
     transition:.3s ease;
-    text-shadow:0 4px 15px rgba(0,0,0,0.6); /* glow for visibility */
+    text-shadow:0 4px 15px rgba(0,0,0,0.6);
+    user-select:none;
 }
 
 /* Hover effect */
 .play-overlay:hover{
     transform:translate(-50%,-50%) scale(1.2);
     color:#ff4d6d;
+}
+
+/* Small Pause Button (top-right) */
+.pause-btn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.35);
+    color:#fff;
+    width:44px;
+    height:44px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    cursor:pointer;
+    z-index:5;
+    backdrop-filter: blur(6px);
+    transition: .25s ease;
+    user-select:none;
+
+    opacity:0;               /* hidden until started */
+    pointer-events:none;     /* disabled until started */
+}
+.pause-btn:hover{
+    transform: scale(1.06);
+    background:rgba(0,0,0,0.5);
 }
 
 /* Message Box */
@@ -123,7 +153,12 @@ h1{
 
     <div class="slideshow">
         <img id="slideImage" src="images/1.jpeg" alt="Memories">
+
+        <!-- Start button -->
         <div class="play-overlay" id="playButton">▶</div>
+
+        <!-- Pause/Resume button -->
+        <div class="pause-btn" id="pauseButton" aria-label="Pause or Resume">⏸</div>
     </div>
 
     <div class="message">
@@ -134,10 +169,10 @@ h1{
     <p class="signature">With all my heart 💖</p>
 </div>
 
-<audio id="bgMusic" src="music/palagi.mp3" loop></audio>
+<!-- IMPORTANT: removed loop so music can end -->
+<audio id="bgMusic" src="music/palagi.mp3"></audio>
 
 <script>
-
 /* Floating Hearts */
 const heartsContainer = document.getElementById("hearts-container");
 
@@ -152,66 +187,49 @@ for(let i=0;i<18;i++){
 }
 
 /* Elements */
-const bgMusic=document.getElementById("bgMusic");
-const slideImage=document.getElementById("slideImage");
-const playButton=document.getElementById("playButton");
+const bgMusic = document.getElementById("bgMusic");
+const slideImage = document.getElementById("slideImage");
+const playButton = document.getElementById("playButton");
+const pauseButton = document.getElementById("pauseButton");
 
 const images=[
-"images/1.jpeg",
-"images/2.jpeg",
-"images/3.jpeg",
-"images/4.jpeg",
-"images/5.jpeg",
-"images/6.jpeg",
-"images/7.jpeg",
-"images/8.jpeg",
-"images/9.jpeg",
-"images/10.jpeg",
-"images/11.jpeg",
-"images/12.jpeg",
-"images/13.jpeg",
-"images/14.jpeg",
-"images/15.jpeg",
-"images/16.jpeg",
-"images/17.jpeg",
-"images/18.jpeg",
-"images/19.jpeg",
-"images/20.jpeg",
-"images/21.jpeg",
-"images/22.jpeg",
-"images/23.jpeg",
-"images/24.jpeg",
-"images/25.jpeg",
-"images/26.jpeg",
-"images/27.jpeg",
-"images/28.jpeg",
-"images/29.jpeg",
-"images/30.jpeg",
-"images/31.jpeg",
-"images/32.jpeg",
-"images/33.jpeg",
-"images/34.jpeg",
-"images/35.jpeg",
-"images/36.jpeg",
-"images/37.jpeg"
+"images/1.jpeg","images/2.jpeg","images/3.jpeg","images/4.jpeg","images/5.jpeg",
+"images/6.jpeg","images/7.jpeg","images/8.jpeg","images/9.jpeg","images/10.jpeg",
+"images/11.jpeg","images/12.jpeg","images/13.jpeg","images/14.jpeg","images/15.jpeg",
+"images/16.jpeg","images/17.jpeg","images/18.jpeg","images/19.jpeg","images/20.jpeg",
+"images/21.jpeg","images/22.jpeg","images/23.jpeg","images/24.jpeg","images/25.jpeg",
+"images/26.jpeg","images/27.jpeg","images/28.jpeg","images/29.jpeg","images/30.jpeg",
+"images/31.jpeg","images/32.jpeg","images/33.jpeg","images/34.jpeg","images/35.jpeg",
+"images/36.jpeg","images/37.jpeg"
 ];
 
-let currentIndex=0;
-let slideshowInterval;
+let currentIndex = 0;
+let slideshowInterval = null;
+let isStarted = false;
+let isPaused = false;
 
 /* Start Slideshow */
 function startSlideshow(){
-    slideshowInterval=setInterval(()=>{
-        currentIndex=(currentIndex+1)%images.length;
+    stopSlideshow(); // prevent duplicates
+    slideshowInterval = setInterval(()=>{
+        currentIndex = (currentIndex + 1) % images.length;
 
-        slideImage.style.opacity=0;
+        slideImage.style.opacity = 0;
 
         setTimeout(()=>{
-            slideImage.src=images[currentIndex];
-            slideImage.style.opacity=1;
+            slideImage.src = images[currentIndex];
+            slideImage.style.opacity = 1;
         },300);
 
     },2500);
+}
+
+/* Stop Slideshow */
+function stopSlideshow(){
+    if(slideshowInterval){
+        clearInterval(slideshowInterval);
+        slideshowInterval = null;
+    }
 }
 
 /* Heart Burst Effect */
@@ -241,22 +259,83 @@ function heartBurst(){
     }
 }
 
-/* Play Button Click */
-playButton.addEventListener("click",()=>{
+/* Show pause button */
+function enablePauseButton(){
+    pauseButton.style.opacity = "1";
+    pauseButton.style.pointerEvents = "auto";
+}
+
+/* Hide pause button */
+function disablePauseButton(){
+    pauseButton.style.opacity = "0";
+    pauseButton.style.pointerEvents = "none";
+}
+
+/* Update pause icon */
+function updatePauseIcon(){
+    pauseButton.textContent = isPaused ? "▶" : "⏸";
+}
+
+/* Start (first play) */
+function startExperience(){
+    isStarted = true;
+    isPaused = false;
+    updatePauseIcon();
 
     startSlideshow();
     heartBurst();
 
-    bgMusic.volume=0.7;
+    bgMusic.volume = 0.7;
+    bgMusic.currentTime = 0;
     bgMusic.play();
+
+    enablePauseButton();
 
     playButton.style.opacity="0";
     setTimeout(()=>{
         playButton.style.display="none";
     },300);
+}
 
+/* Pause everything */
+function pauseExperience(){
+    isPaused = true;
+    updatePauseIcon();
+    bgMusic.pause();
+    stopSlideshow();
+}
+
+/* Resume everything */
+function resumeExperience(){
+    isPaused = false;
+    updatePauseIcon();
+    bgMusic.play();
+    startSlideshow();
+}
+
+/* Play Button Click */
+playButton.addEventListener("click", ()=>{
+    startExperience();
 });
 
+/* Pause Button Click */
+pauseButton.addEventListener("click", ()=>{
+    if(!isStarted) return;
+
+    if(isPaused){
+        resumeExperience();
+    }else{
+        pauseExperience();
+    }
+});
+
+/* When music ends, stop slideshow too */
+bgMusic.addEventListener("ended", ()=>{
+    stopSlideshow();
+    isPaused = true;
+    updatePauseIcon();
+    disablePauseButton(); // slideshow will stop and controls disappear
+});
 </script>
 
 </body>
